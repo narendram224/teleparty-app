@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
   const client = useChat();
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/teleparty-app">
       <div>
         <Routes>
           <Route path="/" element={<ChatPage client={client} />}></Route>
