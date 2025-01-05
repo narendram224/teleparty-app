@@ -1,4 +1,5 @@
 import { useChatStore } from "@/store/chat.store";
+import { toast } from "react-toastify";
 import { TelepartyClient, SocketEventHandler } from "teleparty-websocket-lib";
 
 const useChat = () => {
@@ -6,10 +7,10 @@ const useChat = () => {
 
   const eventHandler: SocketEventHandler = {
     onConnectionReady: () => {
-      console.info("Connection has been established");
+      toast.success("Connection has been established");
     },
     onClose: () => {
-      console.info("Socket has been closed");
+      toast.error("Socket has been closed,Please refresh the page");
     },
     onMessage: (message) => {
       console.log("Received message: ", message);

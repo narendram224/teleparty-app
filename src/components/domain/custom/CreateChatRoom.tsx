@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import {
   Dialog,
@@ -16,28 +15,28 @@ import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "@/store/chat.store";
 import { TelepartyClient } from "teleparty-websocket-lib";
+import { toast } from "react-toastify";
 
 export function CreateChatRoom({ client }: { client: TelepartyClient }) {
   const [nickname, setNickname] = useState("");
   const [open, setOpen] = useState(false);
-  const setNickNameToStore = useChatStore((state: any) => state.setNickName);
-  const setRoomIdToStore = useChatStore((state: any) => state.setRoomId);
+  const setNickNameToStore = useChatStore((state) => state.setNickName);
+  const setRoomIdToStore = useChatStore((state) => state.setRoomId);
   const router = useNavigate();
 
   const createRoom = async (roomName: string) => {
-    console.log("create room");
     return await client.createChatRoom(roomName, "");
   };
 
   const handleCreateChatroom = async (userNickName: string) => {
     try {
       const roomId = await createRoom(userNickName);
-      console.log("roomId", roomId);
       router(`/chat/${roomId}/${userNickName}`);
       setNickNameToStore(userNickName);
       setRoomIdToStore(roomId);
-    } catch (error) {
-      console.log(error);
+      toast.success("Room created successfully");
+    } catch {
+      toast.success("Error while creating room");
     }
   };
 
@@ -81,7 +80,9 @@ export function CreateChatRoom({ client }: { client: TelepartyClient }) {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Create Chatroom</Button>
+            <Button type="submit" disabled={!nickname.trim()}>
+              Create Chatroom
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

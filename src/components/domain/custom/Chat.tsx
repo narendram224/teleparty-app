@@ -17,6 +17,7 @@ import SidebarMenus from "./Sidebar";
 import { useChatStore } from "@/store/chat.store";
 import { useParams } from "react-router-dom";
 import { SocketMessageTypes, TelepartyClient } from "teleparty-websocket-lib";
+import { toast } from "react-toastify";
 
 export function Chat({ client }: { client: TelepartyClient }) {
   const messageList = useChatStore((state) => state.messages);
@@ -39,6 +40,7 @@ export function Chat({ client }: { client: TelepartyClient }) {
         body: message,
       });
     } catch (error) {
+      toast.success("Error while sending message");
       console.log(error);
     }
   };
@@ -49,15 +51,17 @@ export function Chat({ client }: { client: TelepartyClient }) {
       setNewMessage("");
     }
   };
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(activeChatroom || "");
+    toast.success("Copied to clipboard");
+  };
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="flex">
       <SidebarMenus client={client} />
       <Card className="flex-1 flex flex-col">
         <CardHeader>
-          <CardTitle
-            onClick={() => navigator.clipboard.writeText(activeChatroom || "")}
-          >
+          <CardTitle onClick={copyToClipboard}>
             <div className="flex gap-2 cursor-pointer">
               <b> Room Id</b>
               <span className="text-sm text-blue-700 ">

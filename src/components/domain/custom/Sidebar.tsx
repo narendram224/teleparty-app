@@ -18,7 +18,7 @@ const SidebarMenus = ({ client }: { client: TelepartyClient }) => {
   const chatrooms: Chatroom[] = [];
 
   return (
-    <Sidebar className="w-78 border-r">
+    <Sidebar className="w-78 border-r ">
       <SidebarHeader className="p-4 border-b ">
         <h2 className="text-lg font-semibold mb-2">Chatrooms</h2>
         <div className="flex gap-2">

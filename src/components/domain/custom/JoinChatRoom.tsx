@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import {
   Dialog,
@@ -16,6 +15,7 @@ import { User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "@/store/chat.store";
 import { TelepartyClient } from "teleparty-websocket-lib";
+import { toast } from "react-toastify";
 
 export function JoinChatRoom({ client }: { client: TelepartyClient }) {
   const [roomId, setRoomId] = useState("");
@@ -23,29 +23,25 @@ export function JoinChatRoom({ client }: { client: TelepartyClient }) {
   const [open, setOpen] = useState(false);
   const router = useNavigate();
 
-  useChatStore();
-  const setNickNameToStore = useChatStore((state: any) => state.setNickName);
-  const setRoomIdToStore = useChatStore((state: any) => state.setRoomId);
-  const setMessagesToStore = useChatStore((state: any) => state.setMessages);
+  const setNickNameToStore = useChatStore((state) => state.setNickName);
+  const setRoomIdToStore = useChatStore((state) => state.setRoomId);
 
   const joinRoom = async (roomId: string, nickname: string) => {
     await client.joinChatRoom(nickname, roomId, "");
   };
 
-  const handleCreateChatroom = async (roomId: string, userNickname: string) => {
+  const handleJoinChatroom = async (roomId: string, userNickname: string) => {
     try {
-      const JoinedRoomMessageList = await joinRoom(roomId, userNickname);
-      console.log("messageList", JoinedRoomMessageList);
-      setMessagesToStore(JoinedRoomMessageList);
-
+      await joinRoom(roomId, userNickname);
       router(`/chat/${roomId}/${userNickname}`);
       setNickNameToStore(userNickname);
       setRoomIdToStore(roomId);
+      toast.success("Room joined successfully");
 
       setOpen(false);
-      console.log("runs");
     } catch (error) {
       console.log(error);
+      toast.success("Error while joining room");
       setOpen(false);
     }
   };
@@ -53,7 +49,7 @@ export function JoinChatRoom({ client }: { client: TelepartyClient }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (roomId && nickname) {
-      handleCreateChatroom(roomId, nickname);
+      handleJoinChatroom(roomId, nickname);
       setRoomId("");
       setNickname("");
     }
@@ -69,9 +65,9 @@ export function JoinChatRoom({ client }: { client: TelepartyClient }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create a new chatroom</DialogTitle>
+          <DialogTitle>Join the chatroom</DialogTitle>
           <DialogDescription>
-            Enter a room name and your nickname to create a new chatroom.
+            Enter a room name and your nickname to join chatroom.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -102,7 +98,9 @@ export function JoinChatRoom({ client }: { client: TelepartyClient }) {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Join Chatroom</Button>
+            <Button type="submit" disabled={!roomId.trim() || !nickname.trim()}>
+              Join Chatroom
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
